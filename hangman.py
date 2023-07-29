@@ -17,11 +17,78 @@ from time import sleep
 class Hangman():
     MAX_MOVES = 6
     WORD_BANK = ("cookie", "shortcake", "cheesecake", "tiramisu",
-             "donut", "cupcakes", "baklava", "cannoli", "chocotaco")
+                 "donut", "cupcakes", "baklava", "cannoli", "chocotaco")
+
+    GALLOW_STAGES = [
+        """
+        +---+
+        |   |
+            |
+            |
+            |
+            |
+        ============
+        """,
+        """
+        +---+
+        |   |
+        O   |
+            |
+            |
+            |
+        ============
+        """,
+        """
+        +---+
+        |   |
+        O   |
+        |   |
+            |
+            |
+        ============
+        """,
+        """
+        +---+
+        |   |
+        O   |
+       /|   |
+            |
+            |
+        ============
+        """,
+        """
+        +---+
+        |   |
+        O   |
+       /|\  |
+            |
+            |
+        ============
+        """,
+        """
+        +---+
+        |   |
+        O   |
+       /|\  |
+       /    |
+            |
+        ============
+        """,
+        """
+        +---+
+        |   |
+        O   |
+       /|\  |
+       / \  |
+            |
+        ============
+        """
+    ]
 
     def __init__(self):
         self.word = choice(Hangman.WORD_BANK)
         self.guessed_letters = []
+        self.incorrect_guesses = []
         self.num_of_moves = 0
     
     
@@ -31,25 +98,31 @@ class Hangman():
         for letter in board:
             print(letter, end=" ")
         print()
-        print("Guessed letters : " ,end=" ")
+        print("Guessed letters : ", end=" ")
         if self.guessed_letters:
             for letter in self.guessed_letters:
                 print(letter, end=" ")
         else:
             print("You haven't guessed any letters!")
         print()
-        print(f" You have {Hangman.MAX_MOVES - self.num_of_moves} moves left!")       
+        print(f"You have {Hangman.MAX_MOVES - self.num_of_moves} moves left!")
+
+        if self.incorrect_guesses:
+            stage = min(self.num_of_moves, len(Hangman.GALLOW_STAGES) - 1)
+            print(Hangman.GALLOW_STAGES[stage])       
 
     def guess_letter(self, letter):
         if len(letter) > 1:
-            print("You cant do that dog, one leter at a time")
-            return    
+            print("You can't do that, one letter at a time")
+            return
+
         if letter in self.word:
             count = self.word.count(letter)
-            print(f'you found {count} {letter}{"s" if count > 1 else ""}')
+            print(f'You found {count} {letter}{"s" if count > 1 else ""}')
         else:
             print(f'{letter} not in the word')
-            self.num_of_moves +=1
+            self.num_of_moves += 1
+            self.incorrect_guesses.append(letter)
 
         self.guessed_letters.append(letter)
 
@@ -58,6 +131,7 @@ class Hangman():
             if letters not in self.guessed_letters:
                 return False
         return True
+    
     def guess_word(self,word):
         if word == self.word:
             return True
@@ -69,7 +143,7 @@ class Hangman():
         return False
     
     def user_won(self):
-        print(f"Congrats! You solved my riddle with {Hangman.MAX_MOVES - self.num_of_moves} move{'s' if self.num_of_moves > 1 else ''} left! You ROCK!")
+        print(f"Congrats! You got the word with {Hangman.MAX_MOVES - self.num_of_moves} move{'s' if self.num_of_moves > 1 else ''} left! You ROCK!")
 
     def user_lost(self):
         print("WOW, that hurt to watch.")
